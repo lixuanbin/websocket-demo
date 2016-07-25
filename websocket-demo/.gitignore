@@ -3,3 +3,5 @@
 /.classpath
 /.project
 /websocket-demo.log
+/.pydevproject
+/baidu.html
