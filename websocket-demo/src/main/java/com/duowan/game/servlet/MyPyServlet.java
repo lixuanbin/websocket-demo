@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.util.Enumeration;
 import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicLong;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
@@ -145,19 +147,13 @@ public class MyPyServlet extends HttpServlet {
 	@Override
 	public void service(ServletRequest req, ServletResponse res) throws ServletException,
 			IOException {
-		req.setAttribute("pyservlet", this);
-
 		String spath = (String) req.getAttribute("javax.servlet.include.servlet_path");
 		if (spath == null) {
 			spath = ((HttpServletRequest) req).getServletPath();
 			if (spath == null || spath.length() == 0) {
-				// Servlet 2.1 puts the path of an extension-matched servlet in
-				// PathInfo.
 				spath = ((HttpServletRequest) req).getPathInfo();
 			}
 		}
-		String rpath = getServletContext().getRealPath(spath);
-		log.info("requested real path: " + rpath);
 		getServlet(spath).service(req, res);
 	}
 
@@ -187,9 +183,17 @@ public class MyPyServlet extends HttpServlet {
 
 	private HttpServlet getServlet(String path) throws ServletException, IOException {
 		CacheEntry entry = cache.get(path);
-		if (entry == null || System.currentTimeMillis() - entry.lastAccessTime > tenMinutesMillis) {
-			return loadServlet(path);
+		if (entry == null || System.currentTimeMillis() - entry.lastTime > tenMinutesMillis) {
+			synchronized (this) {
+				log.info("get servlet step1");
+				entry = cache.get(path);
+				if (entry == null || System.currentTimeMillis() - entry.lastTime > tenMinutesMillis) {
+					log.info("get servlet step2");
+					return loadServlet(path);
+				}
+			}
 		}
+		entry.requestCount.incrementAndGet();
 		return entry.servlet;
 	}
 
@@ -213,7 +217,9 @@ public class MyPyServlet extends HttpServlet {
 		} catch (PyException e) {
 			throw new ServletException(e);
 		}
-		cache.putIfAbsent(path, new CacheEntry(dto, servlet, System.currentTimeMillis()));
+		AtomicLong lastCount = cache.get(path) != null ? cache.get(path).requestCount : new AtomicLong(0);
+		lastCount.incrementAndGet();
+		cache.put(path, new CacheEntry(dto, servlet, System.currentTimeMillis(), lastCount));
 		return servlet;
 	}
 
@@ -250,12 +256,14 @@ public class MyPyServlet extends HttpServlet {
 	private static class CacheEntry {
 		public PyServletDto dto;
 		public HttpServlet servlet;
-		public long lastAccessTime;
+		public long lastTime;
+		public AtomicLong requestCount;
 
-		CacheEntry(PyServletDto dto, HttpServlet servlet, long lastAccessTime) {
+		CacheEntry(PyServletDto dto, HttpServlet servlet, long lastAccessTime, AtomicLong requestCount) {
 			this.servlet = servlet;
 			this.dto = dto;
-			this.lastAccessTime = lastAccessTime;
+			this.lastTime = lastAccessTime;
+			this.requestCount = requestCount;
 		}
 	}
 
