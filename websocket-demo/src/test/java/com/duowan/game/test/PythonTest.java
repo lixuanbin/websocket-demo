@@ -24,12 +24,15 @@ import javax.management.ReflectionException;
 import javax.management.openmbean.CompositeData;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.log4j.Logger;
 import org.codehaus.groovy.control.CompilationFailedException;
 import org.junit.Test;
 import org.python.core.PyLong;
 import org.python.core.PyObject;
+import org.python.core.PyString;
 
 public class PythonTest {
+	public static final Logger log = Logger.getLogger(PythonTest.class);
 	@Test
 	public <T> void testHello() throws CompilationFailedException, IOException,
 			AttributeNotFoundException, InstanceNotFoundException, MBeanException,
@@ -68,7 +71,7 @@ public class PythonTest {
 			list.add(exec.submit(new Callable<String>() {
 				public String call() throws Exception {
 					String millis = String.valueOf(System.currentTimeMillis());
-					PyObject blahInstance = blahClass.__call__();
+					PyObject blahInstance = blahClass.__call__(new PyString("dt-test"));
 					String result = blahInstance.invoke("process", new PyLong(millis))
 							.__tojava__(String.class).toString();
 					// System.out.println(result);
