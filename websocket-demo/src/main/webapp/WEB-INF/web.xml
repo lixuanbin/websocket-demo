@@ -7,21 +7,36 @@
 	<welcome-file-list>
 		<welcome-file>index.jsp</welcome-file>
 	</welcome-file-list>
+	<context-param>
+		<param-name>contextConfigLocation</param-name>
+		<param-value>classpath:/applicationContext.xml</param-value>
+	</context-param>
+	<listener>
+		<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+	</listener>
 
 	<servlet>
 		<servlet-name>websocket-demo</servlet-name>
-		<servlet-class>
-			org.springframework.web.servlet.DispatcherServlet
-		</servlet-class>
+		<servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
 		<init-param>
-            <param-name>contextConfigLocation</param-name>
-            <param-value>classpath:/websocket-demo-servlet.xml</param-value>
-        </init-param>
+			<param-name>contextConfigLocation</param-name>
+			<param-value>classpath:/websocket-demo-servlet.xml</param-value>
+		</init-param>
 		<load-on-startup>1</load-on-startup>
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>websocket-demo</servlet-name>
 		<url-pattern>*.do</url-pattern>
+	</servlet-mapping>
+
+	<servlet>
+		<servlet-name>PyServlet</servlet-name>
+		<servlet-class>com.duowan.game.servlet.MyPyServlet</servlet-class>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>PyServlet</servlet-name>
+		<url-pattern>*.py</url-pattern>
 	</servlet-mapping>
 
 </web-app>
