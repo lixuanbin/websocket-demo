@@ -1,7 +1,10 @@
 package com.duowan.game.test;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 
+import org.apache.commons.io.IOUtils;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -13,7 +16,7 @@ import com.duowan.game.dao.PyServletDao;
 import com.duowan.game.domain.PyServletDto;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = { "classpath:websocket-demo-servlet.xml" })
+@ContextConfiguration(locations = { "classpath:applicationContext.xml" })
 public class PyServletDaoTest {
 	@Autowired
 	private PyServletDao dao;
@@ -54,6 +57,21 @@ public class PyServletDaoTest {
 				+ "        request.setAttribute(\"sum\", sum)\n"
 				+ "        dispatcher = request.getRequestDispatcher(\"testJython.jsp\")\n"
 				+ "        dispatcher.forward(request, response)\n");
+		dao.save(dto);
+	}
+	
+	@Test
+	public void testSave2() throws IOException {
+		String script = null;
+		InputStream inputStream = getClass().getClassLoader().getResourceAsStream("testSelect.py");
+		script = IOUtils.toString(inputStream, "utf-8");
+		IOUtils.closeQuietly(inputStream);
+		String className = "testSelect";
+		PyServletDto dto = new PyServletDto();
+		dto.setClassName(className);
+		dto.setScript(script);
+		dto.setStatus(0);
+		dto.setRequestPath("/testSelect.py");
 		dao.save(dto);
 	}
 	

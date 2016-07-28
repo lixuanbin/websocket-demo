@@ -6,6 +6,8 @@ import java.sql.SQLException;
 import java.util.Date;
 import java.util.List;
 
+import javax.annotation.PostConstruct;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +22,12 @@ import com.duowan.game.domain.PyServletDto;
 
 @Repository
 public class PyServletDao {
-	protected static final Logger log = Logger.getLogger(PyServletDao.class);
+	public static final Logger log = Logger.getLogger(PyServletDao.class);
+
+	@PostConstruct
+	public void init() {
+		DaoFactory.daoCache.put("PyServletDao", this);
+	}
 
 	@Autowired
 	private JdbcTemplate jdbcTemplate;
@@ -46,10 +53,10 @@ public class PyServletDao {
 		log.info("findByClassName sql: " + sql);
 		return jdbcTemplate.query(sql, extractor);
 	}
-	
+
 	public PyServletDto findByRequestPath(String requestPath) {
-		String sql = String.format("select * from dataservice.tb_py_servlet where requestPath='%s'",
-				requestPath);
+		String sql = String.format(
+				"select * from dataservice.tb_py_servlet where requestPath='%s'", requestPath);
 		log.info("findByRequestPath sql: " + sql);
 		return jdbcTemplate.query(sql, extractor);
 	}
