@@ -4,19 +4,34 @@ import java.sql.SQLException;
 import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import javax.sql.DataSource;
 
 import org.apache.log4j.Logger;
+import org.springframework.stereotype.Service;
 
 import com.alibaba.druid.pool.DruidDataSource;
 
-public class DataSourceFactory {
-	public static final Logger log = Logger.getLogger(DataSourceFactory.class);
-
+/**
+ * Provides database connectivity for python scripts, usage: <br/>
+ * 1. Try DataSourceStore.getDataSource(name);<br/>
+ * 2. If null returned, register your own data source and call get again.
+ * 
+ * @author lixuanbin
+ */
+@Service
+public class DataSourceStore {
+	public static final Logger log = Logger.getLogger(DataSourceStore.class);
 	protected static final ConcurrentHashMap<String, DataSource> dataSourceCache = new ConcurrentHashMap<String, DataSource>();
 
+	@PostConstruct
+	public void initCache() {
+		// Init pre-defined datasources blah blah blah...
+	}
+
 	@SuppressWarnings("resource")
-	public static boolean registerDataSource(String name, Properties properties) {
+	public static synchronized boolean registerDataSource(String name, Properties properties) {
 		if (dataSourceCache.get(name) != null) {
 			throw new RuntimeException(name + " already exists!");
 		}
@@ -47,5 +62,11 @@ public class DataSourceFactory {
 				log.error(e.getMessage(), e);
 			}
 		}
+	}
+
+	@PreDestroy
+	public void destroy() {
+		// Destroy cache as spring context close.
+		destroyCache();
 	}
 }
