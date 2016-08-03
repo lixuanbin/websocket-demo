@@ -16,8 +16,8 @@ class RedisPoolTest2:
                 ServiceRegistry.registerService("testRedisPool", self.pool)
             finally:
                 pass
+        self.r = redis.Redis(connection_pool=self.pool)
         self.log.info(self.name + ': init...')
     def process(self, millis):
-        r = redis.Redis(connection_pool=self.pool)
-        r.set('millis', millis)
-        return r.get('millis')
+        self.r.set('millis', millis)
+        return self.r.get('millis')
