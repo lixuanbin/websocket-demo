@@ -71,7 +71,7 @@ import com.duowan.game.domain.PyServletDto;
 public class MyPyServlet extends HttpServlet {
 	private static final long serialVersionUID = -8736439501739144397L;
 	protected static final String INIT_ATTR = "__jython_initialized__";
-	protected static final long tenMinutesMillis = 10 * 60 * 1000;
+	protected static final long thirtyMinutesMillis = 30 * 60 * 1000;
 	protected static final Logger log = Logger.getLogger(MyPyServlet.class);
 
 	@Autowired
@@ -182,11 +182,11 @@ public class MyPyServlet extends HttpServlet {
 
 	private HttpServlet getServlet(String path) throws ServletException, IOException {
 		CacheEntry entry = cache.get(path);
-		if (entry == null || System.currentTimeMillis() - entry.lastTime > tenMinutesMillis) {
+		if (entry == null || System.currentTimeMillis() - entry.lastTime > thirtyMinutesMillis) {
 			synchronized (this) {
 				log.info("get servlet step1");
 				entry = cache.get(path);
-				if (entry == null || System.currentTimeMillis() - entry.lastTime > tenMinutesMillis) {
+				if (entry == null || System.currentTimeMillis() - entry.lastTime > thirtyMinutesMillis) {
 					log.info("get servlet step2");
 					return loadServlet(path);
 				}
@@ -204,7 +204,7 @@ public class MyPyServlet extends HttpServlet {
 	 * @throws ServletException
 	 * @throws IOException
 	 */
-	private synchronized HttpServlet loadServlet(String path) throws ServletException, IOException {
+	private HttpServlet loadServlet(String path) throws ServletException, IOException {
 		PyServletDto dto = dao.findByRequestPath(path);
 		if (dto == null) {
 			throw new ServletException("No python servlet found for " + path);
@@ -256,7 +256,7 @@ public class MyPyServlet extends HttpServlet {
 		public PyServletDto dto;
 		public HttpServlet servlet;
 		public long lastTime;
-		public AtomicLong requestCount;
+		public AtomicLong requestCount; // TODO should use redis instead
 
 		CacheEntry(PyServletDto dto, HttpServlet servlet, long lastAccessTime, AtomicLong requestCount) {
 			this.servlet = servlet;

@@ -26,6 +26,7 @@ import javax.management.openmbean.CompositeData;
 import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
 import org.codehaus.groovy.control.CompilationFailedException;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.python.core.PyLong;
 import org.python.core.PyObject;
@@ -34,6 +35,7 @@ import org.python.core.PyString;
 public class PythonTest {
 	public static final Logger log = Logger.getLogger(PythonTest.class);
 	@Test
+	@Ignore
 	public <T> void testHello() throws CompilationFailedException, IOException,
 			AttributeNotFoundException, InstanceNotFoundException, MBeanException,
 			ReflectionException, MalformedObjectNameException, InterruptedException,
