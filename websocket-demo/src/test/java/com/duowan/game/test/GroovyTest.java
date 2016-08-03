@@ -8,10 +8,12 @@ import java.io.File;
 import java.io.IOException;
 
 import org.codehaus.groovy.control.CompilationFailedException;
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class GroovyTest {
 	@Test
+	@Ignore
 	public void testHello() throws CompilationFailedException, IOException {
 		GroovyShell shell = new GroovyShell();
 		File scriptFile = new File(getClass().getClassLoader().getResource("http-test.groovy")
