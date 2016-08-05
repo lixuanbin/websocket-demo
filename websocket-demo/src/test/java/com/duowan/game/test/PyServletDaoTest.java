@@ -62,18 +62,17 @@ public class PyServletDaoTest {
 	}
 	
 	@Test
-	@Ignore
 	public void testSave2() throws IOException {
 		String script = null;
-		InputStream inputStream = getClass().getClassLoader().getResourceAsStream("testSelect.py");
+		InputStream inputStream = getClass().getClassLoader().getResourceAsStream("SampleUploadServlet2.py");
 		script = IOUtils.toString(inputStream, "utf-8");
 		IOUtils.closeQuietly(inputStream);
-		String className = "testSelect";
+		String className = "SampleUploadServlet2";
 		PyServletDto dto = new PyServletDto();
 		dto.setClassName(className);
 		dto.setScript(script);
 		dto.setStatus(0);
-		dto.setRequestPath("/testSelect.py");
+		dto.setRequestPath("/sampleUpload2.py");
 		dao.save(dto);
 	}
 	
@@ -89,8 +88,10 @@ public class PyServletDaoTest {
 	}
 	
 	@Test
+	@Ignore
 	public void testFindAll() {
 		List<PyServletDto> list = dao.findAll();
 		System.out.println(list);
 	}
+
 }

@@ -9,7 +9,7 @@ import org.junit.Test;
 import org.python.core.PyLong;
 import org.python.core.PyObject;
 
-import redis.clients.jedis.Jedis;
+// import redis.clients.jedis.Jedis;
 
 /**
  * 测试Python原生Redis连接的性能，发现比hiredis和Jedis慢了差不多4倍。。。
@@ -19,7 +19,8 @@ import redis.clients.jedis.Jedis;
 public class RedisPoolTest {
 	@Test
 	public void testGetSet() throws IOException {
-		Jedis jedis = new Jedis("127.0.0.1", 6379);
+		long begin, end;
+		/*Jedis jedis = new Jedis("127.0.0.1", 6379);
 		long begin = System.currentTimeMillis();
 		for (int i = 0; i < 100000; i++) {
 			long millis = System.currentTimeMillis();
@@ -27,7 +28,7 @@ public class RedisPoolTest {
 			jedis.get("millis");
 		}
 		long end = System.currentTimeMillis();
-		System.out.println(String.format("2 time consumed: %d ms.", (end - begin)));
+		System.out.println(String.format("2 time consumed: %d ms.", (end - begin)));*/
 		// tps 8k on win, 17k on mac.
 
 		org.python.util.PythonInterpreter interpreter = new org.python.util.PythonInterpreter();

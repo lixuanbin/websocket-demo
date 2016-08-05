@@ -72,7 +72,7 @@ public class MyPyServlet extends HttpServlet {
 	private static final long serialVersionUID = -8736439501739144397L;
 	protected static final String INIT_ATTR = "__jython_initialized__";
 	protected static final long thirtyMinutesMillis = 30 * 60 * 1000;
-	protected static final Logger log = Logger.getLogger(MyPyServlet.class);
+	public static final Logger log = Logger.getLogger(MyPyServlet.class);
 
 	@Autowired
 	private PyServletDao dao;
@@ -174,6 +174,9 @@ public class MyPyServlet extends HttpServlet {
 		if (StringUtils.containsIgnoreCase(os, "Windows")) {
 			interp.exec("sys.path.append('D:\\jython2.7.0\\Lib')");
 			interp.exec("sys.path.append('D:\\jython2.7.0\\Lib\\site-packages')");
+		} else if (StringUtils.containsIgnoreCase(os, "Mac")) {
+			interp.exec("sys.path.append('/Users/lixuanbin/jython2.7.0/Lib')");
+			interp.exec("sys.path.append('/Users/lixuanbin/jython2.7.0/Lib/site-packages')");
 		} else {
 			interp.exec("sys.path.append('/data/jython2.7.0/Lib')");
 			interp.exec("sys.path.append('/data/jython2.7.0/Lib/site-packages')");
