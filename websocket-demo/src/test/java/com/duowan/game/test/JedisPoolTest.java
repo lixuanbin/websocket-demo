@@ -20,7 +20,8 @@ public class JedisPoolTest {
 		config.setMaxTotal(500);
 		config.setMaxIdle(5);
 		config.setTestOnBorrow(true);
-		pool = new JedisPool(config, "127.0.0.1", 6379);
+		// pool = new JedisPool(config, "127.0.0.1", 6379);
+		pool = new JedisPool(config, "172.27.22.26", 6379);
 		for (int i = 0; i < 10; i++) {
 			long begin = System.currentTimeMillis();
 			for (int k = 0; k < 10000; k++) {
@@ -47,7 +48,8 @@ public class JedisPoolTest {
 		config.setMaxTotal(500);
 		config.setMaxIdle(5);
 		config.setTestOnBorrow(true);
-		final JedisPool pool = new JedisPool(config, "127.0.0.1", 6379);
+		// final JedisPool pool = new JedisPool(config, "127.0.0.1", 6379);
+		final JedisPool pool = new JedisPool(config, "172.27.22.26", 6379);
 		for (int i = 0; i < 10; i++) {
 			long begin = System.currentTimeMillis();
 			final CountDownLatch latch = new CountDownLatch(10000);

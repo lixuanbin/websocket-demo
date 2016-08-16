@@ -64,15 +64,15 @@ public class PyServletDaoTest {
 	@Test
 	public void testSave2() throws IOException {
 		String script = null;
-		InputStream inputStream = getClass().getClassLoader().getResourceAsStream("SampleUploadServlet2.py");
+		InputStream inputStream = getClass().getClassLoader().getResourceAsStream("testSelect.py");
 		script = IOUtils.toString(inputStream, "utf-8");
 		IOUtils.closeQuietly(inputStream);
-		String className = "SampleUploadServlet2";
+		String className = "testSelect";
 		PyServletDto dto = new PyServletDto();
 		dto.setClassName(className);
 		dto.setScript(script);
 		dto.setStatus(0);
-		dto.setRequestPath("/sampleUpload2.py");
+		dto.setRequestPath("/testSelect.py");
 		dao.save(dto);
 	}
 	

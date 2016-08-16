@@ -71,7 +71,7 @@ import com.duowan.game.domain.PyServletDto;
 public class MyPyServlet extends HttpServlet {
 	private static final long serialVersionUID = -8736439501739144397L;
 	protected static final String INIT_ATTR = "__jython_initialized__";
-	protected static final long thirtyMinutesMillis = 30 * 60 * 1000;
+	protected static final long sixtyMinutesMillis = 60 * 60 * 1000;
 	public static final Logger log = Logger.getLogger(MyPyServlet.class);
 
 	@Autowired
@@ -153,7 +153,26 @@ public class MyPyServlet extends HttpServlet {
 				spath = ((HttpServletRequest) req).getPathInfo();
 			}
 		}
-		getServlet(spath).service(req, res);
+		if(StringUtils.equalsIgnoreCase("/unload.py", spath)) {
+			String path = req.getParameter("path");
+			res.getWriter().print(unload(path));
+		} else {
+			getServlet(spath).service(req, res);	
+		}
+	}
+	
+	/**
+	 * Unload the given servlet.
+	 * 
+	 * @param path
+	 * @return
+	 */
+	public boolean unload(String path) {
+		if(cache.remove(path) != null) {
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 	@Override
@@ -185,11 +204,11 @@ public class MyPyServlet extends HttpServlet {
 
 	private HttpServlet getServlet(String path) throws ServletException, IOException {
 		CacheEntry entry = cache.get(path);
-		if (entry == null || System.currentTimeMillis() - entry.lastTime > thirtyMinutesMillis) {
+		if (entry == null || System.currentTimeMillis() - entry.lastTime > sixtyMinutesMillis) {
 			synchronized (this) {
 				log.info("get servlet step1");
 				entry = cache.get(path);
-				if (entry == null || System.currentTimeMillis() - entry.lastTime > thirtyMinutesMillis) {
+				if (entry == null || System.currentTimeMillis() - entry.lastTime > sixtyMinutesMillis) {
 					log.info("get servlet step2");
 					return loadServlet(path);
 				}

@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.Callable;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -24,6 +25,7 @@ import javax.management.ReflectionException;
 import javax.management.openmbean.CompositeData;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.codehaus.groovy.control.CompilationFailedException;
 import org.junit.Ignore;
@@ -35,7 +37,6 @@ import org.python.core.PyString;
 public class PythonTest {
 	public static final Logger log = Logger.getLogger(PythonTest.class);
 	@Test
-	@Ignore
 	public <T> void testHello() throws CompilationFailedException, IOException,
 			AttributeNotFoundException, InstanceNotFoundException, MBeanException,
 			ReflectionException, MalformedObjectNameException, InterruptedException,
@@ -67,24 +68,30 @@ public class PythonTest {
 		String pyScript = IOUtils.toString(inputStream, "utf-8");
 		interpreter.exec(pyScript);
 		final PyObject blahClass = interpreter.get("FundB");
+		final PyObject blahInstance = blahClass.__call__(new PyString("dt-test"));
+		int times = 100;
+		final CountDownLatch latch = new CountDownLatch(times);
 		ExecutorService exec = Executors.newCachedThreadPool();
 		List<Future<String>> list = new ArrayList<Future<String>>();
-		for (int i = 0; i < 1; i++) {
+		for (int i = 0; i < times; i++) {
 			list.add(exec.submit(new Callable<String>() {
 				public String call() throws Exception {
+					latch.countDown();
 					String millis = String.valueOf(System.currentTimeMillis());
-					PyObject blahInstance = blahClass.__call__(new PyString("dt-test"));
+					// PyObject blahInstance = blahClass.__call__(new PyString("dt-test"));
 					String result = blahInstance.invoke("process", new PyLong(millis))
 							.__tojava__(String.class).toString();
-					// System.out.println(result);
+					System.out.println(result);
 					return result;
 				}
 			}));
 		}
 		exec.shutdown();
-		exec.awaitTermination(30, TimeUnit.SECONDS);
+		latch.await();
 		for (Future<String> future : list) {
-			System.out.println(future.get());
+			if(!StringUtils.equalsIgnoreCase("success", future.get())) {
+				System.out.println(future.get());				
+			}
 		}
 		interpreter.close();
 

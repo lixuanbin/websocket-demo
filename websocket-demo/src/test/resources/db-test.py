@@ -15,13 +15,13 @@ class FundB:
             print msg
         return dbConn
     def process(self, millis):
-        fundBPath = 'https://api.github.com/user'
+        fundBPath = 'http://combine.dylogin.game.yy.com/get_by_udbuid?udbuid=1601700512'
         r=requests.get(fundBPath)
         self.log.info(self.name + ': ' + r.text)
         url, user, pwd, driver = "jdbc:mysql://localhost/dataservice", 'root' ,'ben', "com.mysql.jdbc.Driver"
         conn = self.getConnection(url, driver, user, pwd)
         c = conn.cursor()
-        c.execute("insert into dataservice.py_script_heartbeat(beat,demo) values (%d,'%s')" % (millis, r.text))
+        c.execute("insert ignore into dataservice.py_script_heartbeat(beat,demo) values (%d,'%s')" % (millis, r.text))
         conn.commit()
         c.close()
         conn.close()

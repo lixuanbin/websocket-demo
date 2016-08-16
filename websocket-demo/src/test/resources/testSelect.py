@@ -3,6 +3,7 @@ from com.duowan.game.dao import DaoFactory
 from com.duowan.game.dao import PyServletDao
 from org.apache.log4j import Logger
 from com.ziclix.python.sql import zxJDBC
+import TestDynamicImport
 class testSelect(HttpServlet):
     def __init__(self):
         self.log = PyServletDao.log
@@ -16,6 +17,7 @@ class testSelect(HttpServlet):
         return dbConn
     def doGet(self, req, res):
         path = DaoFactory.getDao('PyServletDao').findByClassName('hello').getRequestPath()
+        path += TestDynamicImport.message
         res.setContentType("text/plain");
         out = res.getOutputStream()
         print >>out, path

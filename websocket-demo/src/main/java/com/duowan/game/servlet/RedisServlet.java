@@ -27,7 +27,8 @@ public class RedisServlet extends HttpServlet {
 		config.setMaxTotal(500);
 		config.setMaxIdle(5);
 		config.setTestOnBorrow(true);
-		pool = new JedisPool(config, "127.0.0.1", 6379);
+		// pool = new JedisPool(config, "127.0.0.1", 6379);
+		pool = new JedisPool(config, "172.27.22.26", 6379);
 	}
 
 	@Override
@@ -54,7 +55,7 @@ public class RedisServlet extends HttpServlet {
 			throws ServletException, IOException {
 		// ab -n 5000 -c 10 'http://localhost:8080/websocket-demo/RedisServlet.oo?data={%22commandName%22:%22jobMonitor.runJob%22,%22params%22:{%22jobId%22:%228342a7d6-051a-41da-9fe5-6fd89eb3474e%22,%22dataFrom%22:20160730,%22dataTo%22:20160730,%22interval%22:0}}'
 		// 7k+ tps, mac, tomcat 8, jdk 8.
-		Jedis jedis = null;
+		/*Jedis jedis = null;
 		try {
 			jedis = pool.getResource();
 			String data = request.getParameter("data");
@@ -63,7 +64,7 @@ public class RedisServlet extends HttpServlet {
 			if (jedis != null) {
 				jedis.close();
 			}
-		}
+		}*/
 		response.getWriter().write("{'status': 200, 'message': 'success', 'data': 'None'}");
 	}
 
